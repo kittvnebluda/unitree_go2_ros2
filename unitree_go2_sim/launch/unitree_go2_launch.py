@@ -147,16 +147,45 @@ def generate_launch_description():
         name="footprint_to_odom_ekf",
         output="screen",
         parameters=[
-            {"base_link_frame": base_frame},
             {"use_sim_time": use_sim_time},
-            os.path.join(
-                get_package_share_directory("champ_base"),
-                "config",
-                "ekf",
-                "footprint_to_odom.yaml",
-            ),
+            {"base_link_frame": "base_footprint"},
+            {"odom_frame": "odom"},
+            {"world_frame": "odom"},
+            {"publish_tf": True},
+            {"frequency": 50.0},
+            {"two_d_mode": True},
+            {"odom0": "odom/raw"},
+            {"odom0_config": [False, False, False, False, False, False, True, True, False, False, False, True, False, False, False]},
+            {"imu0": "imu/data"},
+            {"imu0_config": [False, False, False, False, False, True, False, False, False, False, False, True, False, False, False]},
         ],
         remappings=[("odometry/filtered", "odom")],
+    )
+
+    # Go2 static frame connection (map -> odom)
+    map_to_odom_tf_node = Node(
+        package='tf2_ros',
+        name='map_to_odom_tf_node',
+        executable='static_transform_publisher',
+        parameters=[{'use_sim_time': use_sim_time}],
+        arguments=[
+            '--x', '0', '--y', '0', '--z', '0',
+            '--roll', '0', '--pitch', '0', '--yaw', '0',
+            '--frame-id', 'map', '--child-frame-id', 'odom'
+        ],
+    )
+    
+    # Go2 URDF connection (base_footprint -> base_link)  
+    base_footprint_to_base_link_tf_node = Node(
+        package='tf2_ros',
+        name='base_footprint_to_base_link_tf_node',
+        executable='static_transform_publisher',
+        parameters=[{'use_sim_time': use_sim_time}],
+        arguments=[
+            '--x', '0', '--y', '0', '--z', '0',
+            '--roll', '0', '--pitch', '0', '--yaw', '0',
+            '--frame-id', 'base_footprint', '--child-frame-id', 'base_link'
+        ],
     )
 
     rviz2 = Node(
@@ -292,6 +321,14 @@ def generate_launch_description():
             # CHAMP controller nodes
             quadruped_controller_node,
             state_estimator_node,
+            
+            # EKF nodes for localization
+            base_to_footprint_ekf,
+            footprint_to_odom_ekf,
+            
+            # TF publishers for frame connections
+            map_to_odom_tf_node,
+            base_footprint_to_base_link_tf_node,
             
             # Controller spawners that handle the complete lifecycle
             controller_spawner_js,
