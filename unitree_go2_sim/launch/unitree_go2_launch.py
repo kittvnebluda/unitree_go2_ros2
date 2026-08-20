@@ -249,6 +249,11 @@ def generate_launch_description():
             '/odom@nav_msgs/msg/Odometry@gz.msgs.Odometry',
             '/gps/fix@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
             '/rgb_image@sensor_msgs/msg/Image@gz.msgs.Image',
+            # Foot contact sensors
+            '/lf_foot_contacts@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts',
+            '/rf_foot_contacts@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts',
+            '/lh_foot_contacts@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts',
+            '/rh_foot_contacts@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts',
             # D455 RGBD camera bridges
             '/d455/image@sensor_msgs/msg/Image[gz.msgs.Image',
             '/d455/depth_image@sensor_msgs/msg/Image[gz.msgs.Image',
