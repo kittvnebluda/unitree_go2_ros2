@@ -126,6 +126,12 @@ def generate_launch_description():
         remappings=[("/cmd_vel/smooth", "/cmd_vel")],
     )
 
+    foot_contacts_bridge_node = Node(
+        package="unitree_application",
+        executable="foot_contacts_bridge",
+        output="screen",
+    )
+
     state_estimator_node = Node(
         package="champ_base",
         executable="state_estimation_node",
@@ -340,6 +346,7 @@ def generate_launch_description():
             
             # CHAMP controller nodes
             quadruped_controller_node,
+            foot_contacts_bridge_node,
             state_estimator_node,
             
             # EKF nodes for localization
