@@ -190,18 +190,6 @@ def generate_launch_description():
             '--frame-id', 'map', '--child-frame-id', 'odom'
         ],
     )
-    
-    # Go2 URDF connection (base_footprint -> base_link)  
-    base_footprint_to_base_link_tf_node = Node(
-        package='tf2_ros',
-        name='base_footprint_to_base_link_tf_node',
-        executable='static_transform_publisher',
-        arguments=[
-            '--x', '0', '--y', '0', '--z', '0',
-            '--roll', '0', '--pitch', '0', '--yaw', '0',
-            '--frame-id', 'base_footprint', '--child-frame-id', 'base_link'
-        ],
-    )
 
     rviz2 = Node(
         package='rviz2',
@@ -244,17 +232,13 @@ def generate_launch_description():
         name='gazebo_bridge',
         output='screen',
         arguments=[
-            # Gazebo to ROS
             '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
-            '/imu/data@sensor_msgs/msg/Imu@gz.msgs.IMU',
-            '/tf@tf2_msgs/msg/TFMessage@gz.msgs.Pose_V',
-            '/joint_states@sensor_msgs/msg/JointState@gz.msgs.Model',
-            '/velodyne_points/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
-            '/unitree_lidar/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
-            # '/velodyne_points@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan',
-            '/odom@nav_msgs/msg/Odometry@gz.msgs.Odometry',
+            '/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU',
+            '/velodyne_points/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
+            '/unitree_lidar/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
             '/gps/fix@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
-            '/rgb_image@sensor_msgs/msg/Image@gz.msgs.Image',
+            '/odom/ground_truth@nav_msgs/msg/Odometry[gz.msgs.Odometry',
+            '/rgb_image@sensor_msgs/msg/Image[gz.msgs.Image',
             # Foot contact sensors
             '/lf_foot_contacts@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts',
             '/rf_foot_contacts@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts',
@@ -265,10 +249,6 @@ def generate_launch_description():
             '/d455/depth_image@sensor_msgs/msg/Image[gz.msgs.Image',
             '/d455/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
             '/d455/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
-
-            # ROS to Gazebo
-            '/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
-            '/joint_group_effort_controller/joint_trajectory@trajectory_msgs/msg/JointTrajectory]gz.msgs.JointTrajectory',
         ],
     )
     
@@ -353,9 +333,8 @@ def generate_launch_description():
             base_to_footprint_ekf,
             footprint_to_odom_ekf,
             
-            # TF publishers for frame connections
+            # Static TF publisher for frame connections
             map_to_odom_tf_node,
-            base_footprint_to_base_link_tf_node,
             
             # Controller spawners that handle the complete lifecycle
             controller_spawner_js,
